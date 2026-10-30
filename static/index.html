@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Tienda WhatsApp — Catálogo, Apartados y Administración</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <!-- TOP HEADER -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <button class="brand-btn" id="brandHomeBtn" type="button" aria-label="Ir al inicio">
+        <span class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+            <path d="M3 6h18"></path>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name" id="headerStoreName">Mi Tienda WhatsApp</span>
+          <span class="brand-sub">Catálogo en línea y apartados</span>
+        </span>
+      </button>
+
+      <!-- Desktop Navigation -->
+      <nav class="desktop-nav" id="customerDesktopNav" aria-label="Navegación principal">
+        <button type="button" class="nav-pill active" data-tab="home">Inicio</button>
+        <button type="button" class="nav-pill" data-tab="categories">Categorías</button>
+        <button type="button" class="nav-pill" data-tab="arrivals">Nuevos</button>
+        <button type="button" class="nav-pill" data-tab="orders">Mis Pedidos</button>
+        <button type="button" class="nav-pill" data-tab="contact">Contacto</button>
+      </nav>
+
+      <div class="topbar-actions">
+        <button type="button" class="cart-trigger" id="openCartBtn" aria-label="Abrir carrito de apartados">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span class="cart-trigger-label">Apartados</span>
+          <span class="cart-count" id="cartCountBadge">0</span>
+        </button>
+
+        <button type="button" class="admin-switch-btn" id="toggleAdminBtn">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+          </svg>
+          <span id="adminBtnText">Panel Admin</span>
+          <span class="pending-dot hidden" id="adminPendingBadge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="main-container">
+    <!-- ==================== CUSTOMER STOREFRONT VIEW ==================== -->
+    <div id="storefrontView">
+      <!-- TAB: INICIO -->
+      <section class="tab-panel active" id="tab-home">
+        <div class="store-toolbar">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.3-4.3"></path>
+            </svg>
+            <input type="search" id="searchInput" placeholder="Buscar por nombre, marca, talla o código (ej. P001)..." autocomplete="off" />
+            <button type="button" class="clear-search hidden" id="clearSearchBtn" aria-label="Limpiar búsqueda">&times;</button>
+          </div>
+
+          <div class="toolbar-controls">
+            <div class="filter-chips" id="homeQuickFilters">
+              <button type="button" class="chip active" data-filter="disponibles">Disponibles</button>
+              <button type="button" class="chip" data-filter="todos">Todo el catálogo</button>
+              <button type="button" class="chip" data-filter="destacados">Destacados</button>
+              <button type="button" class="chip" data-filter="apartados">Apartados</button>
+            </div>
+
+            <select id="sortSelect" class="sort-select" aria-label="Ordenar productos">
+              <option value="featured">Destacados primero</option>
+              <option value="newest">Más recientes</option>
+              <option value="price_asc">Precio: menor a mayor</option>
+              <option value="price_desc">Precio: mayor a menor</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Category Quick Strip -->
+        <div class="category-strip-wrap">
+          <div class="category-strip" id="homeCategoryStrip"></div>
+        </div>
+
+        <!-- Active Filter Banner -->
+        <div class="active-cat-banner hidden" id="activeCategoryBanner">
+          <div>
+            <span class="banner-kicker">Filtrando categoría:</span>
+            <strong id="activeCategoryTitle">Calzado</strong>
+          </div>
+          <button type="button" class="btn-ghost-sm" id="resetCategoryFilterBtn">Ver todas las categorías</button>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="products-grid" id="homeProductsGrid"></div>
+      </section>
+
+      <!-- TAB: CATEGORÍAS -->
+      <section class="tab-panel" id="tab-categories">
+        <div class="section-head">
+          <div>
+            <h1>Categorías</h1>
+            <p>Explora las colecciones disponibles y toca cualquiera para filtrar el inventario.</p>
+          </div>
+        </div>
+        <div class="categories-grid" id="categoriesCardsGrid"></div>
+      </section>
+
+      <!-- TAB: NUEVOS INGRESOS -->
+      <section class="tab-panel" id="tab-arrivals">
+        <div class="section-head">
+          <div>
+            <h1>Nuevos Ingresos</h1>
+            <p>Mercancía recién agregada al inventario, lista para apartar antes de que se agote.</p>
+          </div>
+        </div>
+        <div class="products-grid" id="arrivalsProductsGrid"></div>
+      </section>
+
+      <!-- TAB: MIS PEDIDOS Y COMPROBANTE -->
+      <section class="tab-panel" id="tab-orders">
+        <div class="orders-layout">
+          <!-- Left: Lookup Orders -->
+          <div class="panel-card">
+            <div class="card-head">
+              <h2>Mis Pedidos y Apartados</h2>
+              <p>Consulta el estatus de tu apartado o pago ingresando tu teléfono a 10 dígitos o tu folio.</p>
+            </div>
+
+            <form id="orderLookupForm" class="lookup-form">
+              <input type="text" id="orderLookupInput" placeholder="Teléfono (ej. 5587654321) o Folio (ej. PED-003)" required />
+              <button type="submit" class="btn-primary">Buscar</button>
+            </form>
+
+            <div class="demo-hints">
+              <span>Ejemplos rápidos:</span>
+              <button type="button" class="hint-pill" data-demo-q="5587654321">5587654321</button>
+              <button type="button" class="hint-pill" data-demo-q="5512345678">5512345678</button>
+              <button type="button" class="hint-pill" data-demo-q="PED-003">PED-003</button>
+            </div>
+
+            <div id="customerOrdersList" class="customer-orders-list"></div>
+          </div>
+
+          <!-- Right: Step 9 Direct Receipt Upload Form -->
+          <div class="panel-card">
+            <div class="card-head">
+              <h2>Subir Comprobante de Pago</h2>
+              <p>¿Ya realizaste tu transferencia SPEI o depósito en OXXO? Sube aquí tu captura para aprobar tu pedido.</p>
+            </div>
+
+            <div class="bank-mini-box" id="ordersBankSummary"></div>
+
+            <form id="directReceiptForm" class="stacked-form">
+              <div class="form-row-2">
+                <div class="field">
+                  <label for="recName">Tu Nombre Completo *</label>
+                  <input type="text" id="recName" placeholder="Ej. María López" required />
+                </div>
+                <div class="field">
+                  <label for="recPhone">Teléfono / WhatsApp (10 dígitos) *</label>
+                  <input type="tel" id="recPhone" placeholder="Ej. 5512345678" required />
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="field">
+                  <label for="recOrderId">Número de Pedido (si ya apartaste)</label>
+                  <input type="text" id="recOrderId" placeholder="Ej. PED-003 (opcional)" />
+                </div>
+                <div class="field">
+                  <label for="recMethod">Método de Pago *</label>
+                  <select id="recMethod">
+                    <option value="Transferencia SPEI">Transferencia SPEI</option>
+                    <option value="Depósito OXXO">Depósito OXXO</option>
+                    <option value="Tarjeta / Link de Pago">Tarjeta / Link de Pago</option>
+                    <option value="Efectivo Contra Entrega">Efectivo Contra Entrega</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row-2" id="recExtraProductFields">
+                <div class="field">
+                  <label for="recProdName">Producto (si compraste directo en WhatsApp)</label>
+                  <input type="text" id="recProdName" placeholder="Ej. Tenis Nike Air Max" />
+                </div>
+                <div class="field">
+                  <label for="recAmount">Monto Pagado MXN</label>
+                  <input type="number" id="recAmount" step="0.01" min="0" placeholder="Ej. 650" />
+                </div>
+              </div>
+
+              <div class="field">
+                <label>Captura o Foto del Comprobante *</label>
+                <label class="upload-dropzone" id="directReceiptDropzone">
+                  <input type="file" id="recFileInput" accept="image/*,.pdf" hidden />
+                  <div id="recUploadPrompt" class="upload-prompt">
+                    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Toca para elegir foto de tu galería o tomar foto del ticket</span>
+                    <small>JPG, PNG, WEBP o PDF (máx. 25 MB)</small>
+                  </div>
+                  <div id="recUploadPreview" class="upload-preview hidden"></div>
+                </label>
+              </div>
+
+              <div class="field">
+                <label for="recNotes">Notas adicionales (opcional)</label>
+                <input type="text" id="recNotes" placeholder="Ej. Transferencia enviada desde BBVA a nombre de María" />
+              </div>
+
+              <button type="submit" class="btn-primary btn-block" id="submitDirectReceiptBtn">
+                Enviar Comprobante a Revisión
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: CONTACTO Y DATOS BANCARIOS -->
+      <section class="tab-panel" id="tab-contact">
+        <div class="contact-grid" id="contactSectionContent"></div>
+      </section>
+    </div>
+
+    <!-- ==================== ADMIN PANEL VIEW ==================== -->
+    <div id="adminView" class="hidden">
+      <div class="admin-header-bar">
+        <div>
+          <h1 id="adminWelcomeTitle">Panel de Control e Inventario</h1>
+        </div>
+        <div class="admin-header-actions">
+          <a href="/api/export/xlsx" class="btn-outline" download="Inventario_Tienda_WhatsApp.xlsx">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Descargar Excel (.xlsx)
+          </a>
+          <button type="button" class="btn-primary" id="adminNewProductQuickBtn">
+            + Nuevo Producto
+          </button>
+          <button type="button" class="btn-ghost" id="exitAdminBtn">
+            Ver Tienda Cliente
+          </button>
+        </div>
+      </div>
+
+      <!-- Admin Subnavigation -->
+      <div class="admin-tabs">
+        <button type="button" class="admin-tab active" data-admintab="dashboard">Dashboard</button>
+        <button type="button" class="admin-tab" data-admintab="orders">
+          Pedidos y Comprobantes <span class="tab-count" id="adminTabOrdersCount">0</span>
+        </button>
+        <button type="button" class="admin-tab" data-admintab="products">Productos e Inventario</button>
+        <button type="button" class="admin-tab" data-admintab="movements">Bitácora de Stock</button>
+        <button type="button" class="admin-tab" data-admintab="customers">Clientes WhatsApp</button>
+        <button type="button" class="admin-tab" data-admintab="settings">Configuración y Roles</button>
+      </div>
+
+      <div id="adminContentArea" class="admin-content-area"></div>
+    </div>
+  </main>
+
+  <!-- MOBILE BOTTOM NAVIGATION (STEP 5) -->
+  <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Navegación móvil">
+    <button type="button" class="mob-tab active" data-tab="home">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      <span>Inicio</span>
+    </button>
+    <button type="button" class="mob-tab" data-tab="categories">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <span>Categorías</span>
+    </button>
+    <button type="button" class="mob-tab" data-tab="arrivals">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+      <span>Nuevos</span>
+    </button>
+    <button type="button" class="mob-tab" data-tab="orders">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      <span>Mis Pedidos</span>
+    </button>
+    <button type="button" class="mob-tab" data-tab="contact">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+      <span>Contacto</span>
+    </button>
+  </nav>
+
+  <!-- CART / APARTADOS DRAWER -->
+  <div class="drawer-backdrop hidden" id="cartBackdrop"></div>
+  <aside class="cart-drawer hidden" id="cartDrawer" aria-label="Carrito y apartados">
+    <div class="drawer-header">
+      <div>
+        <h2>Carrito y Apartados</h2>
+        <p id="cartDrawerSub">Revisa tus productos para apartar o comprar</p>
+      </div>
+      <button type="button" class="icon-close" id="closeCartBtn" aria-label="Cerrar">&times;</button>
+    </div>
+    <div class="drawer-body" id="cartDrawerBody"></div>
+  </aside>
+
+  <!-- UNIVERSAL MODAL CONTAINER (Product Detail, Receipt Lightbox, Admin Login, Product Editor) -->
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <div class="modal-dialog" id="modalDialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 id="modalTitle" class="sr-only"></h2>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATIONS -->
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

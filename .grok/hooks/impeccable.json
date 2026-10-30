@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd /c if exist \"C:\\Users\\jacku\\.grok\\skills\\impeccable\\scripts\\impeccable.cmd\" \"C:\\Users\\jacku\\.grok\\skills\\impeccable\\scripts\\impeccable.cmd\" hook",
+            "timeout": 5,
+            "statusMessage": "Checking UI changes"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd /c if exist \"C:\\Users\\jacku\\.grok\\skills\\impeccable\\scripts\\impeccable.cmd\" \"C:\\Users\\jacku\\.grok\\skills\\impeccable\\scripts\\impeccable.cmd\" hook",
+            "timeout": 30,
+            "statusMessage": "Design deep pass"
+          }
+        ]
+      }
+    ]
+  }
+}
